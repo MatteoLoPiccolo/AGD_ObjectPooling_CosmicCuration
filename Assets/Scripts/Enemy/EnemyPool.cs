@@ -1,53 +1,54 @@
-using CosmicCuration.Enemy;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class EnemyPool : MonoBehaviour
+namespace CosmicCuration.Enemy
 {
-    private EnemyView enemyView;
-    private EnemyData enemyData;
-    private List<PooledEnemy> pooledEnemies;
-
-    public EnemyPool(EnemyView enemyPrefab, EnemyData enemyData)
+    public class EnemyPool
     {
-        this.enemyView = enemyPrefab;
-        this.enemyData = enemyData;
-    }
+        private EnemyView enemyPrefab;
+        private EnemyData enemyData;
+        private List<PooledEnemy> pooledEnemies = new List<PooledEnemy>();
 
-    public EnemyController GetEnemy()
-    {
-        if (pooledEnemies.Count > 0)
+        public EnemyPool(EnemyView enemyPrefab, EnemyData enemyData)
         {
-            PooledEnemy enemy = pooledEnemies.Find(enemy => !enemy.isUsed);
-            if (enemy != null)
-            {
-                enemy.isUsed = true;
-                return enemy.Enemy;
-            }
+            this.enemyPrefab = enemyPrefab;
+            this.enemyData = enemyData;
         }
 
-        return CreateNewPooledEnemy();
-    }
+        public EnemyController GetEnemy()
+        {
+            if (pooledEnemies.Count > 0)
+            {
+                PooledEnemy enemy = pooledEnemies.Find(item => !item.isUsed);
+                if (enemy != null)
+                {
+                    enemy.isUsed = true;
+                    return enemy.Enemy;
+                }
+            }
+            return CreateNewPooledEnemy();
+        }
 
-    public EnemyController CreateNewPooledEnemy()
-    {
-        PooledEnemy newEnemy = new PooledEnemy();
-        newEnemy.Enemy = CreateEnemy();
-        newEnemy.isUsed = true;
-        pooledEnemies.Add(newEnemy);
-        return newEnemy.Enemy;
-    }
+        private EnemyController CreateNewPooledEnemy()
+        {
+            PooledEnemy newEnemy = new PooledEnemy();
+            newEnemy.Enemy = CreateEnemy();
+            newEnemy.isUsed = true;
+            pooledEnemies.Add(newEnemy);
+            return newEnemy.Enemy;
+        }
 
-    private EnemyController CreateEnemy() => new EnemyController(enemyView, enemyData);
+        private EnemyController CreateEnemy() => new EnemyController(enemyPrefab, enemyData);
 
-    public void ReturnEnemy(EnemyController enemy)
-    {
-        PooledEnemy pooledEnemy = pooledEnemies.Find(enemy => enemy.Equals(enemy));
-        pooledEnemy.isUsed = false;
-    }
-    public class PooledEnemy
-    {
-        public EnemyController Enemy;
-        public bool isUsed;
+        public void ReturnEnemy(EnemyController enemy)
+        {
+            PooledEnemy pooledEnemy = pooledEnemies.Find(e => e.Enemy.Equals(enemy));
+            pooledEnemy.isUsed = false;
+        }
+
+        public class PooledEnemy
+        {
+            public EnemyController Enemy;
+            public bool isUsed;
+        }
     }
 }
