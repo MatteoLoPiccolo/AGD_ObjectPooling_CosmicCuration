@@ -1,12 +1,8 @@
 using CosmicCuration.PowerUps;
 using CosmicCuration.Utilities;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
 
-public class PowerupPool : GenericObjectPool<PowerUpController>
+public class PowerUpPool : GenericObjectPool<PowerUpController>
 {
     private PowerUpData powerUpData;
 
